@@ -1,0 +1,30 @@
+{
+	"for_description_of_this_file_see": "https://github.com/function61/turbobob",
+	"version_major": 1,
+	"project_name": "print-ui",
+	"project_emoji_icon": "🖨",
+	"builders": [
+		{
+			"name": "default",
+			"uses": "docker://fn61/buildkit-golang:20250109_1140_037f68db",
+			"commands": {
+				"build": ["build-go-project.sh", "--directory=cmd/print-ui/", "--binary-basename=print-ui"],
+				"dev": ["bash"]
+			},
+			"dev_http_ingress": "80",
+			"mount_destination": "/workspace",
+			"workdir": "/workspace"
+		}
+	],
+	"os_arches": {
+		"linux-amd64": true
+	},
+	"docker_images": [
+		{
+			"image": "ghcr.io/joonas-fi/print-ui",
+			"dockerfile_path": "Dockerfile",
+			"platforms": ["linux/amd64"]
+		}
+	]
+
+}
