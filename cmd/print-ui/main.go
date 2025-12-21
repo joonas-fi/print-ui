@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os/exec"
+	"strconv"
 
 	"github.com/function61/gokit/app/cli"
 	"github.com/function61/gokit/net/http/httputils"
@@ -60,6 +61,12 @@ func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	numCopies := r.Form.Get("copies")
+	if _, err := strconv.Atoi(numCopies); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	lpr := exec.CommandContext(
 		r.Context(),
 		"docker",
@@ -67,6 +74,7 @@ func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
 		"--interactive",
 		"cupsd",
 		"lpr",
+		"-#", numCopies,
 		"-", // take output from stdin
 	)
 	lpr.Stdin = file
