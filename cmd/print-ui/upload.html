@@ -4,11 +4,18 @@
 	<title>Print</title>
 </head>
 <body>
-	<h2>PDF file to print</h2>
+	<h1>Print</h1>
+
 	<form enctype="multipart/form-data" action="/upload" method="post">
-		<input type="file" name="uploadedFile" />
-		Copies:
-		<input type="text" name="copies" value="1" />
+		<fieldset>
+			<legend>PDF file</legend>
+			<input type="file" name="uploadedFile" />
+		</fieldset>
+		<fieldset>
+			<legend>Options</legend>
+			Copies:
+			<input type="text" name="copies" value="1" />
+		</fieldset>
 		<input type="submit" value="Print" />
 	</form>
 </body>
