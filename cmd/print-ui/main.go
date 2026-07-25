@@ -67,16 +67,26 @@ func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lpr := exec.CommandContext(
-		r.Context(),
+	lprCommand := []string{
+		"lpr",
+		"-#", numCopies,
+	}
+
+	if r.Form.Get("double-sided") == "y" {
+		lprCommand = append(lprCommand, "-o", "sides=two-sided-short-edge")
+	}
+
+	lprCommand = append(lprCommand, "-" /* take output from stdin */)
+
+	lprCommandViaDocker := append([]string{
 		"docker",
 		"exec",
 		"--interactive",
 		"cupsd",
-		"lpr",
-		"-#", numCopies,
-		"-", // take output from stdin
-	)
+	}, lprCommand...)
+
+	//nolint:gosec // ok
+	lpr := exec.CommandContext(r.Context(), lprCommandViaDocker[0], lprCommandViaDocker[1:]...)
 	lpr.Stdin = file
 	if output, err := lpr.CombinedOutput(); err != nil {
 		http.Error(w, fmt.Errorf("lpr: %w: %s", err, string(output)).Error(), http.StatusInternalServerError)
