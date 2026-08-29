@@ -1,0 +1,14 @@
+name: Build
+
+on: [push]
+
+permissions:
+  contents: read
+  # push container images to GHCR
+  packages: write
+
+jobs:
+  reusable-build:
+    # this basically just runs `$ bob build` (for details see https://github.com/function61/turbobob)
+    uses: function61/turbobob-action/.github/workflows/build.yml@main
+
