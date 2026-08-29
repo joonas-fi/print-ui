@@ -1,20 +1,21 @@
-FROM alpine:latest
+FROM golang:1.24-bookworm AS build
 
-# needed because this container communicates with CUPS on another container
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 go build -o /out/bro ./cmd/bro
+
+FROM alpine:3.21
+
+# PDF printing delegates to the sibling CUPS container through docker exec.
 RUN apk add --no-cache docker-cli
 
-# NOTE: because of these args, if you want to build this manually you've to add
-#       e.g. --build-arg TARGETARCH=amd64 to $ docker build ...
+COPY --from=build /out/bro /bro
 
-# "amd64" | "arm" | ...
-ARG TARGETARCH
-# usually empty. for "linux/arm/v7" => "v7"
-ARG TARGETVARIANT
+EXPOSE 80
 
-
-ENTRYPOINT ["print-ui"]
-
-CMD ["run"]
-
-
-COPY "rel/print-ui_linux-$TARGETARCH" /bin/print-ui
+ENTRYPOINT ["/bro"]
+CMD ["netum-ui", "--listen=:80"]

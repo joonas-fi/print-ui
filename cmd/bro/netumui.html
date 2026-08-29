@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Netum Print Desk</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #d9ddd7; color: #16201a; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; padding: clamp(1rem, 5vw, 4rem) 1rem; display: grid; place-items: center; background: radial-gradient(circle at top left, #f9b76a, transparent 28rem), #d9ddd7; }
+    main { width: min(42rem, 100%); border: 1px solid #16201a; border-radius: 1.25rem; background: #fcfbf4; box-shadow: .65rem .65rem 0 #16201a; }
+    header { padding: clamp(1.4rem, 5vw, 2.6rem); border-radius: 1.2rem 1.2rem 0 0; background: #16201a; color: #fcfbf4; }
+    .eyebrow { margin: 0 0 .5rem; color: #f9b76a; font-family: ui-monospace, monospace; font-size: .8rem; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 0; font-size: clamp(2rem, 8vw, 4rem); line-height: .9; letter-spacing: -.08em; }
+    .mode-nav { display: flex; gap: .5rem; margin-top: 1.5rem; }
+    .mode-nav a { border: 1px solid #c9d0c7; border-radius: 99rem; color: #fcfbf4; padding: .4rem .75rem; text-decoration: none; font-size: .85rem; font-weight: 750; }
+    .mode-nav a:hover, .mode-nav a.active { border-color: #f9b76a; background: #f9b76a; color: #16201a; }
+    header p { margin: 1rem 0 0; max-width: 31rem; color: #c9d0c7; }
+    form { padding: clamp(1.2rem, 4vw, 2rem); }
+    label { display: flex; justify-content: space-between; margin-bottom: .65rem; font-weight: 750; }
+    label span { font: .75rem ui-monospace, monospace; color: #526158; }
+    textarea { width: 100%; min-height: 18rem; resize: vertical; border: 1px solid #16201a; border-radius: .65rem; background: #fff; color: inherit; font: 1rem/1.5 ui-monospace, monospace; padding: 1rem; }
+    textarea:focus { outline: 3px solid #f9b76a; outline-offset: 2px; }
+    button { width: 100%; margin-top: 1rem; border: 0; border-radius: .65rem; background: #e15b36; color: white; cursor: pointer; font: 800 1rem Inter, ui-sans-serif, sans-serif; padding: 1rem; }
+    button:hover { background: #bd4224; }
+    .actions { display: grid; grid-template-columns: 1fr auto; margin-top: 1rem; position: relative; }
+    .actions button { margin: 0; border-radius: .65rem 0 0 .65rem; }
+    .action-menu { position: relative; }
+    .action-menu summary { display: grid; height: 100%; min-width: 4.5rem; place-items: center; border-left: 1px solid #fcfbf4; border-radius: 0 .65rem .65rem 0; background: #e15b36; color: #fff; cursor: pointer; font-weight: 800; list-style: none; }
+    .action-menu summary::-webkit-details-marker { display: none; }
+    .action-menu summary:hover, .action-menu[open] summary { background: #bd4224; }
+    .action-menu menu { position: absolute; z-index: 1; right: 0; top: calc(100% + .4rem); width: 10rem; margin: 0; padding: .4rem; border: 1px solid #16201a; border-radius: .65rem; background: #fcfbf4; box-shadow: .25rem .25rem 0 #16201a; }
+    .action-menu menu button { width: 100%; border-radius: .4rem; }
+    .preview { margin: 0 1.2rem 1.2rem; }
+    .preview h2 { margin: 0; font-size: 1rem; }
+    .preview p { margin: .4rem 0 1rem; color: #526158; font-size: .85rem; }
+    .receipt-preview { width: fit-content; max-width: 100%; max-height: 36rem; overflow: auto; border: 1px solid #16201a; background: #fff; }
+    .receipt-preview img { display: block; max-width: 100%; height: auto; image-rendering: pixelated; }
+    .message { margin: 0 1.2rem 1.2rem; border-radius: .65rem; padding: 1rem; font-weight: 650; }
+    .notice { background: #ccebd4; }
+    .error { background: #ffd8cf; }
+    footer { padding: 0 1.2rem 1.2rem; color: #526158; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header><p class="eyebrow">NETUM NT-1809DD / RASTER MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a class="active" href="/printers">Receipt</a><a href="/printers/pdf">PDF</a></nav></header>
+    <form method="post" action="/printers/print">
+      <label for="text">Receipt text <span><a href="/printers?today">Insert today's date</a></span></label>
+      <textarea id="text" name="text" maxlength="65536" autofocus required placeholder="A short note, a long receipt, or many lines...">{{.Text}}</textarea>
+      <div class="actions">
+        <button type="submit">Print receipt</button>
+        <details class="action-menu">
+          <summary aria-label="More print actions">More</summary>
+          <menu><button type="submit" formaction="/printers/preview">Preview</button></menu>
+        </details>
+      </div>
+    </form>
+    {{if .PreviewPNGs}}<section class="preview"><h2>Raster preview</h2><p>Exact black-and-white bands sent to the printer. Final feed rows are omitted.</p><div class="receipt-preview">{{range .PreviewPNGs}}<img src="data:image/png;base64,{{.}}" alt="Raster receipt preview">{{end}}</div></section>{{end}}
+    {{if .Notice}}<div class="message notice">{{.Notice}}</div>{{end}}
+    {{if .Error}}<div class="message error">{{.Error}}</div>{{end}}
+  </main>
+</body>
+</html>

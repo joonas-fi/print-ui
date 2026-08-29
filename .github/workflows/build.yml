@@ -4,6 +4,7 @@ on: [push]
 
 permissions:
   contents: read
+  # push container images to GHCR
   packages: write
 
 jobs:
@@ -12,4 +13,3 @@ jobs:
     uses: function61/turbobob-action/.github/workflows/build.yml@main
     secrets:
       DOCKER_CREDS: ${{ secrets.DOCKER_CREDS }}
-
