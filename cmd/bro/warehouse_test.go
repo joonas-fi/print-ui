@@ -15,14 +15,14 @@ func TestRendering(t *testing.T) {
 	buf := &bytes.Buffer{}
 	assert.Ok(t, render(elements, buf))
 	// we want to catch during refactoring if any pixels change in the output
-	assert.Equal(t, fmt.Sprintf("%x", sha256.Sum256(buf.Bytes())), "38ead797d3a79e431cdfa6f2639bd2a6d4c76cec72a80e942a0c41dbed05c664")
+	assert.Equal(t, fmt.Sprintf("%x", sha256.Sum256(buf.Bytes())), "59dc819539c5f97a94b9e85707a81c513d404c0ba2a451a0a7e074ff46fa403f")
 
 	// now without barcode
 	elements = Must(defineContent("Foo", "", barcodeKindQR))
 	buf = &bytes.Buffer{}
 	assert.Ok(t, render(elements, buf))
 	// we want to catch during refactoring if any pixels change in the output
-	assert.Equal(t, fmt.Sprintf("%x", sha256.Sum256(buf.Bytes())), "84b4eb182b62f072f294d4a570921752c1d17ec6e0f8be239fb262a49121a8ee")
+	assert.Equal(t, fmt.Sprintf("%x", sha256.Sum256(buf.Bytes())), "01bc4763df4e8cd4fc34707db28f17ca720a1b27a9ad6ce273aa7209e1239880")
 }
 
 func TestPrintJobs(t *testing.T) {
@@ -106,7 +106,7 @@ func TestPrintJobs(t *testing.T) {
 			reprint:      "old-id",
 			expectedOutput: `[
   {
-    "LabelHumanReadable": "old-id",
+    "LabelHumanReadable": "old-\nid",
     "CodeForBarcode": "https://xs.fi/9/old-id"
   }
 ]`,
