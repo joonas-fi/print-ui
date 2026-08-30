@@ -12,7 +12,6 @@ import (
 	"image/png"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -60,16 +59,13 @@ func netumUIEntrypoint() *cobra.Command {
 }
 
 func serveNetumUI(ctx context.Context, address string, logger *log.Logger, printText func(context.Context, string) error, previewText func(string) ([]template.URL, error)) error {
-	listener, err := net.Listen("tcp", address)
-	if err != nil {
-		return err
-	}
 	server := &http.Server{
+		Addr:              address,
 		Handler:           newNetumUIHandler(printText, previewText),
 		ReadHeaderTimeout: httputils.DefaultReadHeaderTimeout,
 	}
 
-	logger.Printf("Netum UI listening on http://%s", listener.Addr())
+	logger.Printf("Netum UI listening on http://%s", server.Addr)
 	return httputils.CancelableServer(ctx, server, server.ListenAndServe)
 }
 
