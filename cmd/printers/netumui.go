@@ -44,7 +44,7 @@ func netumUIEntrypoint() *cobra.Command {
 	listenAddress := "127.0.0.1:8080"
 	options := defaultNetumOptions()
 	cmd := &cobra.Command{
-		Use:   "netum-ui",
+		Use:   "server",
 		Short: "Run the Netum receipt printer web UI",
 		Args:  cobra.NoArgs,
 		Run: cli.RunnerNoArgs(func(ctx context.Context, logger *log.Logger) error {

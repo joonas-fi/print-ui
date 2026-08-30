@@ -36,8 +36,8 @@ Overall flow:
 	* Then `$ sudo rfcomm bind 0 <bluetooth address>`
 		* This should make `/dev/rfcomm0` appear
 1. Print to it
-	* `$ ./bro datamatrix helloworld hello.png`
-	* `$ ./bro print hello.png`
+	* `$ ./printers datamatrix helloworld hello.png`
+	* `$ ./printers print hello.png`
 
 
 Architecture
