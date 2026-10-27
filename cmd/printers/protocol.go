@@ -97,6 +97,14 @@ func byteSliceAllZeroes(b []byte) bool {
 }
 
 func sendPrintCommandWithFeeding() []byte {
-	// print and feed [1A]
-	return []byte{0x1a}
+	return sendPrintCommand(true)
+}
+
+func sendPrintCommand(feed bool) []byte {
+	if feed {
+		// print and feed [1A]
+		return []byte{0x1a}
+	}
+	// print without feeding [0C]
+	return []byte{0x0c}
 }

@@ -44,7 +44,7 @@
 </head>
 <body>
   <main>
-    <header><p class="eyebrow">NETUM NT-1809DD / RASTER MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a class="active" href="/printers">Receipt</a><a href="/printers/pdf">PDF</a></nav></header>
+    <header><p class="eyebrow">NETUM NT-1809DD / RASTER MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a class="active" href="/printers">Receipt</a><a href="/printers/pdf">PDF</a><a href="/printers/labels">Labels</a></nav></header>
     <form method="post" action="/printers/print">
       <label for="text">Receipt text <span><a href="/printers?today">Insert today's date</a></span></label>
       <textarea id="text" name="text" maxlength="65536" autofocus required placeholder="A short note, a long receipt, or many lines...">{{.Text}}</textarea>

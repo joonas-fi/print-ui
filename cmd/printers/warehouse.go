@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"io"
 	"log"
+	"os"
 	"time"
 
 	"github.com/function61/gokit/app/cli"
 	"github.com/function61/gokit/crypto/cryptoutil"
-	"github.com/function61/gokit/os/osutil"
 	"github.com/joonas-fi/bro/pkg/xsfi"
 	"github.com/spf13/cobra"
 )
@@ -17,6 +17,16 @@ import (
 var (
 	joonasAssets = xsfi.Root.Sub("9") // https://xs.fi/9/<asset ID>
 )
+
+type warehouseOptions struct {
+	reprint      string
+	feed         bool
+	barcodeKind  barcodeKind
+	barcodes     bool
+	texts        bool
+	uniqueLabels int
+	copies       int
+}
 
 func warehouseEntrypoint2() *cobra.Command {
 	options := defaultNetumOptions()
@@ -49,56 +59,26 @@ func warehouseEntrypoint() *cobra.Command {
 		// Short: "Reticulates splines",
 		Args: cobra.NoArgs,
 		Run: cli.RunnerNoArgs(func(ctx context.Context, _ *log.Logger) error {
-			jobs := makePrintJobs(uniqueLabels, copies, reprint, barcodes, texts, defaultIdentifierBuilder)
-
 			barcodeKind, err := newBarcodeKind(barcodeKind_)
 			if err != nil {
 				return err
 			}
 
-			const tempFile = "/dev/shm/print.png"
+			jobs, err := printWarehouseLabels(ctx, warehouseOptions{
+				reprint:      reprint,
+				feed:         feed,
+				barcodeKind:  barcodeKind,
+				barcodes:     barcodes,
+				texts:        texts,
+				uniqueLabels: uniqueLabels,
+				copies:       copies,
+			}, defaultIdentifierBuilder, printFileWithFeed)
+			if err != nil {
+				return err
+			}
 
-			for idx, job := range jobs {
-				select {
-				case <-ctx.Done():
-					return ctx.Err()
-				default:
-				}
-
-				isLast := idx+1 >= len(jobs)
-
-				if err := func() error {
-					if err := osutil.WriteFileAtomic(tempFile, func(w io.Writer) error {
-						elements, err := defineContent(job.LabelHumanReadable, job.CodeForBarcode, barcodeKind)
-						if err != nil {
-							return err
-						}
-
-						if err := render(elements, w); err != nil {
-							return fmt.Errorf("dataMatrixWithLabel: %w", err)
-						}
-
-						return nil
-					}); err != nil {
-						return err
-					}
-
-					if err := printFile(tempFile); err != nil {
-						return err
-					}
-
-					return nil
-				}(); err != nil {
-					return fmt.Errorf("job %d: %w", idx, err)
-				}
-
+			for _, job := range jobs {
 				fmt.Printf("ID = %s\n", job.LabelHumanReadable)
-
-				if !isLast {
-					// needs sleep due to serial comms not being fast enough?
-					time.Sleep(3 * time.Second) // does still work?
-					// time.Sleep(3 * time.Second)
-				}
 			}
 
 			return nil
@@ -114,6 +94,59 @@ func warehouseEntrypoint() *cobra.Command {
 	cmd.Flags().IntVarP(&copies, "copies", "", copies, "--unique-labels=3, --copies=2 means print 6 labels with 2 copies of each unique label")
 
 	return cmd
+}
+
+func printWarehouseLabels(ctx context.Context, options warehouseOptions, buildID identifierBuilder, printImage func(string, bool) error) ([]printJob, error) {
+	if options.uniqueLabels < 1 {
+		return nil, errors.New("unique labels must be at least 1")
+	}
+	if options.copies < 1 {
+		return nil, errors.New("copies must be at least 1")
+	}
+	if !options.barcodes && !options.texts {
+		return nil, errors.New("barcodes or text must be enabled")
+	}
+
+	jobs := makePrintJobs(options.uniqueLabels, options.copies, options.reprint, options.barcodes, options.texts, buildID)
+	for idx, job := range jobs {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
+		isLast := idx+1 == len(jobs)
+		if err := func() error {
+			tempFile, err := os.CreateTemp("", "bro-label-*.png")
+			if err != nil {
+				return err
+			}
+			tempFilePath := tempFile.Name()
+			defer os.Remove(tempFilePath)
+
+			elements, err := defineContent(job.LabelHumanReadable, job.CodeForBarcode, options.barcodeKind)
+			if err == nil {
+				err = render(elements, tempFile)
+			}
+			if closeErr := tempFile.Close(); err == nil {
+				err = closeErr
+			}
+			if err != nil {
+				return fmt.Errorf("render label: %w", err)
+			}
+
+			return printImage(tempFilePath, options.feed && isLast)
+		}(); err != nil {
+			return nil, fmt.Errorf("job %d: %w", idx, err)
+		}
+
+		if !isLast {
+			// The serial connection is not reliable when jobs arrive back-to-back.
+			time.Sleep(3 * time.Second)
+		}
+	}
+
+	return jobs, nil
 }
 
 // describes high-level print job content (label text and its barcode)

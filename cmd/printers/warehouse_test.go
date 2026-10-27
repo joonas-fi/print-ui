@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"testing"
@@ -23,6 +24,30 @@ func TestRendering(t *testing.T) {
 	assert.Ok(t, render(elements, buf))
 	// we want to catch during refactoring if any pixels change in the output
 	assert.Equal(t, fmt.Sprintf("%x", sha256.Sum256(buf.Bytes())), "01bc4763df4e8cd4fc34707db28f17ca720a1b27a9ad6ce273aa7209e1239880")
+}
+
+func TestPrintWarehouseLabelsFeedsOnlyFinalLabel(t *testing.T) {
+	var feeds []bool
+	jobs, err := printWarehouseLabels(context.Background(), warehouseOptions{
+		barcodeKind:  barcodeKindQR,
+		barcodes:     true,
+		texts:        true,
+		uniqueLabels: 1,
+		copies:       2,
+		feed:         true,
+	}, newTestIDBuilder(), func(_ string, feed bool) error {
+		feeds = append(feeds, feed)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(jobs) != 2 {
+		t.Fatalf("jobs = %d", len(jobs))
+	}
+	if got := fmt.Sprint(feeds); got != "[false true]" {
+		t.Fatalf("feed values = %s", got)
+	}
 }
 
 func TestPrintJobs(t *testing.T) {

@@ -56,6 +56,10 @@ func main() {
 }
 
 func printFile(imagePath string) error {
+	return printFileWithFeed(imagePath, true)
+}
+
+func printFileWithFeed(imagePath string, feed bool) error {
 	// imageData, err := getImageData(imagePath, isBlack)
 	imageData, err := getImageData(imagePath, isBlack)
 	if err != nil {
@@ -83,7 +87,7 @@ func printFile(imagePath string) error {
 		}
 	}
 
-	if _, err := printerConn.Write(sendPrintCommandWithFeeding()); err != nil {
+	if _, err := printerConn.Write(sendPrintCommand(feed)); err != nil {
 		return err
 	}
 

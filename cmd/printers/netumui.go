@@ -111,6 +111,9 @@ func newNetumUIHandler(printText func(context.Context, string) error, previewTex
 		renderNetumUI(w, http.StatusOK, netumPage{Text: text, PreviewPNGs: previews})
 	})
 	registerPDFRoutes(mux, printPDF)
+	registerLabelRoutes(mux, defaultIdentifierBuilder, func(ctx context.Context, options warehouseOptions) ([]printJob, error) {
+		return printWarehouseLabels(ctx, options, defaultIdentifierBuilder, printFileWithFeed)
+	})
 	return mux
 }
 

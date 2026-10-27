@@ -92,6 +92,21 @@ func TestNetumUIRootRedirectsToPrinters(t *testing.T) {
 	}
 }
 
+func TestNetumUIHasLabelNavigation(t *testing.T) {
+	handler := newNetumUIHandler(func(context.Context, string) error { return nil }, func(string) ([]string, error) { return nil, nil }, noPDF)
+
+	request := httptest.NewRequest(http.MethodGet, "/printers", nil)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d; body = %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), `href="/printers/labels"`) {
+		t.Fatalf("label navigation missing: %s", response.Body.String())
+	}
+}
+
 func TestPreviewNetumTextProducesRasterPNGs(t *testing.T) {
 	previews, err := previewNetumText("hello", defaultNetumOptions())
 	if err != nil {
