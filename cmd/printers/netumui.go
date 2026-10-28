@@ -114,6 +114,7 @@ func newNetumUIHandler(printText func(context.Context, string) error, previewTex
 	registerLabelRoutes(mux, defaultIdentifierBuilder, func(ctx context.Context, options warehouseOptions) ([]printJob, error) {
 		return printWarehouseLabels(ctx, options, defaultIdentifierBuilder, printFileWithFeed)
 	})
+	registerCodeRoutes(mux, defaultIdentifierBuilder)
 	return mux
 }
 

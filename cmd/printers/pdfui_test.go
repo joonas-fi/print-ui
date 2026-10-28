@@ -78,6 +78,9 @@ func TestPDFUIHasReceiptNavigation(t *testing.T) {
 	if !strings.Contains(response.Body.String(), `href="/printers/labels"`) {
 		t.Fatalf("label navigation missing: %s", response.Body.String())
 	}
+	if !strings.Contains(response.Body.String(), `href="/printers/codes"`) {
+		t.Fatalf("code navigation missing: %s", response.Body.String())
+	}
 }
 
 func pdfMultipartBody(t *testing.T, filename string, content string, copies string, doubleSided bool) (*bytes.Buffer, string) {

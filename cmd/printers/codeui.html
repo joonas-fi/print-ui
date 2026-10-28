@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Print Desk</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #d9ddd7; color: #16201a; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; padding: clamp(1rem, 5vw, 4rem) 1rem; display: grid; place-items: center; background: radial-gradient(circle at top left, #f9b76a, transparent 28rem), #d9ddd7; }
+    main { width: min(42rem, 100%); border: 1px solid #16201a; border-radius: 1.25rem; background: #fcfbf4; box-shadow: .65rem .65rem 0 #16201a; }
+    header { padding: clamp(1.4rem, 5vw, 2.6rem); border-radius: 1.2rem 1.2rem 0 0; background: #16201a; color: #fcfbf4; }
+    .eyebrow { margin: 0 0 .5rem; color: #f9b76a; font-family: ui-monospace, monospace; font-size: .8rem; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 0; font-size: clamp(2rem, 8vw, 4rem); line-height: .9; letter-spacing: -.08em; }
+    .mode-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; }
+    .mode-nav a { border: 1px solid #c9d0c7; border-radius: 99rem; color: #fcfbf4; padding: .4rem .75rem; text-decoration: none; font-size: .85rem; font-weight: 750; }
+    .mode-nav a:hover, .mode-nav a.active { border-color: #f9b76a; background: #f9b76a; color: #16201a; }
+    form { padding: clamp(1.2rem, 4vw, 2rem); display: grid; gap: 1.25rem; }
+    label { font-weight: 750; }
+    label span { display: block; margin-bottom: .45rem; }
+    select { width: 100%; min-height: 3rem; border: 1px solid #16201a; border-radius: .65rem; background: #fff; color: inherit; font: inherit; padding: .7rem; }
+    select:focus { outline: 3px solid #f9b76a; outline-offset: 2px; }
+    button { width: 100%; border: 0; border-radius: .65rem; background: #e15b36; color: white; cursor: pointer; font: 800 1rem Inter, ui-sans-serif, sans-serif; padding: 1rem; }
+    button:hover { background: #bd4224; }
+    .message { margin: 0 1.2rem 1.2rem; border-radius: .65rem; padding: 1rem; font-weight: 650; background: #ffd8cf; }
+  </style>
+</head>
+<body>
+  <main>
+    <header><p class="eyebrow">VECTOR CODE / SVG MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a href="/printers">Receipt</a><a href="/printers/pdf">PDF</a><a href="/printers/labels">Labels</a><a class="active" href="/printers/codes">Codes</a></nav></header>
+    <form method="post" action="/printers/codes/generate">
+      <label><span>Code type</span><select name="barcode-kind"><option value="qr">QR</option><option value="datamatrix">Data Matrix</option></select></label>
+      <button type="submit">Generate SVG</button>
+    </form>
+    {{if .Error}}<div class="message">{{.Error}}</div>{{end}}
+  </main>
+</body>
+</html>

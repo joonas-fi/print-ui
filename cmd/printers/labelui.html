@@ -41,7 +41,7 @@
 </head>
 <body>
   <main>
-    <header><p class="eyebrow">BROTHER P-TOUCH / LABEL MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a href="/printers">Receipt</a><a href="/printers/pdf">PDF</a><a class="active" href="/printers/labels">Labels</a></nav></header>
+    <header><p class="eyebrow">BROTHER P-TOUCH / LABEL MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a href="/printers">Receipt</a><a href="/printers/pdf">PDF</a><a class="active" href="/printers/labels">Labels</a><a href="/printers/codes">Codes</a></nav></header>
     <form method="post" action="/printers/labels/print">
       <div class="row"><label><span>Unique labels</span><input name="unique-labels" type="number" min="1" value="{{.Values.UniqueLabels}}" required></label><label><span>Copies of each</span><input name="copies" type="number" min="1" value="{{.Values.Copies}}" required></label></div>
       <label><span>Reprint existing ID (optional)</span><input name="reprint" value="{{.Values.Reprint}}" autocomplete="off"></label>

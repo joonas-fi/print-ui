@@ -21,7 +21,7 @@ func TestLabelUIHasPrintDeskNavigation(t *testing.T) {
 	if response.Code != http.StatusOK {
 		t.Fatalf("status = %d; body = %s", response.Code, response.Body.String())
 	}
-	for _, href := range []string{`href="/printers"`, `href="/printers/pdf"`, `href="/printers/labels"`} {
+	for _, href := range []string{`href="/printers"`, `href="/printers/pdf"`, `href="/printers/labels"`, `href="/printers/codes"`} {
 		if !strings.Contains(response.Body.String(), href) {
 			t.Fatalf("navigation %q missing: %s", href, response.Body.String())
 		}

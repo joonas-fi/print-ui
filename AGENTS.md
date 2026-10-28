@@ -2,11 +2,12 @@
 
 ## Project
 
-This is a Go printer UI with three modes served by `printers server`:
+This is a Go printer UI with four modes served by `printers server`:
 
 - Receipt mode: `GET /printers`, rasterized and sent directly to the Netum NT-1809DD.
 - PDF mode: `GET /printers/pdf`, forwarded to the sibling `cupsd` container through `docker exec ... lpr`.
 - Label mode: `GET /printers/labels`, rasterized and sent directly to the Brother P-Touch printer.
+- Code mode: `GET /printers/codes`, generates an SVG QR or Data Matrix code.
 - `GET /` redirects to receipt mode.
 
 Keep receipt rendering pixel/raster based. Do not replace it with printer-native text, barcode, or font commands.
