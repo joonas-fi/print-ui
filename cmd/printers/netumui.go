@@ -20,6 +20,7 @@ import (
 	"github.com/function61/gokit/app/cli"
 	"github.com/function61/gokit/net/http/httputils"
 	"github.com/joonas-fi/bro/pkg/escposraster"
+	"github.com/joonas-fi/bro/pkg/ippprint"
 	"github.com/spf13/cobra"
 )
 
@@ -42,6 +43,7 @@ var netumUITemplate = template.Must(template.New("netum-ui").Parse(netumUITempla
 
 func netumUIEntrypoint() *cobra.Command {
 	listenAddress := "127.0.0.1:8080"
+	printerURI := "ipps://brotherlaser.home.fn61.net:443/printers/brotherlaser"
 	options := defaultNetumOptions()
 	cmd := &cobra.Command{
 		Use:   "server",
@@ -50,10 +52,20 @@ func netumUIEntrypoint() *cobra.Command {
 		Run: cli.RunnerNoArgs(func(ctx context.Context, logger *log.Logger) error {
 			return serveNetumUI(ctx, listenAddress, logger, func(ctx context.Context, text string) error {
 				return printNetumText(ctx, text, options)
-			}, func(text string) ([]string, error) { return previewNetumText(text, options) }, printPDFWithCUPS)
+			}, func(text string) ([]string, error) { return previewNetumText(text, options) }, func(ctx context.Context, document io.Reader, copies int, doubleSided bool) error {
+				jobName := "PDF Print Desk"
+				jobOptions := ippprint.Options{Copies: &copies, JobName: &jobName}
+				if doubleSided {
+					sides := "two-sided-short-edge"
+					jobOptions.Sides = &sides
+				}
+				_, err := ippprint.PrintPDF(ctx, nil, printerURI, document, jobOptions)
+				return err
+			})
 		}),
 	}
 	cmd.Flags().StringVar(&listenAddress, "listen", listenAddress, "HTTP listen address")
+	cmd.Flags().StringVar(&printerURI, "ipp-printer-uri", printerURI, "IPP or IPPS printer URI")
 	addNetumFlags(cmd, &options)
 	return cmd
 }

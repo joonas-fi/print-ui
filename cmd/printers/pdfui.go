@@ -3,15 +3,12 @@ package main
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
-	"os/exec"
 	"strconv"
-	"strings"
 )
 
 const pdfMaxBytes = 64 << 20
@@ -57,27 +54,8 @@ func registerPDFRoutes(mux *http.ServeMux, printPDF pdfPrintFunc) {
 			renderPDFUI(w, http.StatusInternalServerError, pdfPage{Copies: copies, DoubleSided: doubleSided, Error: fmt.Sprintf("Print failed: %v", err)})
 			return
 		}
-		renderPDFUI(w, http.StatusOK, pdfPage{Copies: copies, DoubleSided: doubleSided, Notice: "PDF sent to CUPS"})
+		renderPDFUI(w, http.StatusOK, pdfPage{Copies: copies, DoubleSided: doubleSided, Notice: "PDF job submitted; printing may not be complete."})
 	})
-}
-
-func printPDFWithCUPS(ctx context.Context, document io.Reader, copies int, doubleSided bool) error {
-	if copies < 1 {
-		return errors.New("copies must be positive")
-	}
-	args := []string{"exec", "--interactive", "cupsd", "lpr", "-#", strconv.Itoa(copies)}
-	if doubleSided {
-		args = append(args, "-o", "sides=two-sided-short-edge")
-	}
-	args = append(args, "-")
-	//nolint:gosec // no user-controlled input
-	command := exec.CommandContext(ctx, "docker", args...)
-	command.Stdin = document
-	output, err := command.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("CUPS print: %w: %s", err, strings.TrimSpace(string(output)))
-	}
-	return nil
 }
 
 func renderPDFUI(w http.ResponseWriter, status int, page pdfPage) {

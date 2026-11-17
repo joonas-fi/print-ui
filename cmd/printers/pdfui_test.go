@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestPDFUIPrintsViaInjectedCUPSAdapter(t *testing.T) {
+func TestPDFUIPrintsViaInjectedAdapter(t *testing.T) {
 	var gotPDF string
 	var gotCopies int
 	var gotDoubleSided bool

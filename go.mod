@@ -5,6 +5,7 @@ go 1.22
 toolchain go1.24.5
 
 require (
+	github.com/OpenPrinting/goipp v1.2.0
 	github.com/boombuler/barcode v1.0.1
 	github.com/disintegration/imaging v1.6.2
 	github.com/function61/gokit v0.0.0-20260822195148-784934b22880

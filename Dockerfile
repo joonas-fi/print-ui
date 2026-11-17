@@ -10,8 +10,8 @@ RUN CGO_ENABLED=0 go build -o /out/printers ./cmd/printers
 
 FROM alpine:3.21
 
-# PDF printing delegates to the sibling CUPS container through docker exec.
-RUN apk add --no-cache docker-cli
+# PDF printing uses TLS to reach the IPPS printer.
+RUN apk add --no-cache ca-certificates
 
 COPY --from=build /out/printers /printers
 

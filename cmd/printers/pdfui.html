@@ -33,7 +33,7 @@
 </head>
 <body>
   <main>
-    <header><p class="eyebrow">CUPS / PDF MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a href="/printers">Receipt</a><a class="active" href="/printers/pdf">PDF</a><a href="/printers/labels">Labels</a><a href="/printers/codes">Codes</a></nav></header>
+    <header><p class="eyebrow">IPP / PDF MODE</p><h1>Print Desk</h1><nav class="mode-nav" aria-label="Printer mode"><a href="/printers">Receipt</a><a class="active" href="/printers/pdf">PDF</a><a href="/printers/labels">Labels</a><a href="/printers/codes">Codes</a></nav></header>
     <form enctype="multipart/form-data" action="/printers/pdf/print" method="post">
       <fieldset><legend>PDF file</legend><input type="file" name="uploadedFile" accept="application/pdf,.pdf" required></fieldset>
       <div class="row"><label>Copies<input name="copies" type="number" min="1" value="{{.Copies}}" required></label><label class="check"><input name="double-sided" type="checkbox" value="y" {{if .DoubleSided}}checked{{end}}>Double sided</label></div>
