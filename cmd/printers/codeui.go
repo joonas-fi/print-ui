@@ -72,6 +72,8 @@ func newSVGBarcode(content string, kind barcodeKind) (barcode.Barcode, error) {
 		return qr.Encode(content, qr.M, qr.Auto)
 	case barcodeKindDatamatrix:
 		return datamatrix.Encode(content)
+	case barcodeKindCode128:
+		return nil, fmt.Errorf("unrecognized barcodeKind: %s", kind)
 	default:
 		return nil, fmt.Errorf("unrecognized barcodeKind: %s", kind)
 	}

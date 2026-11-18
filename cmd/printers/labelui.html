@@ -49,7 +49,7 @@
       <fieldset><legend>Content and output</legend><div class="options"><label><input name="barcodes" type="checkbox" {{if .Values.Barcodes}}checked{{end}}>Barcode</label><label><input name="texts" type="checkbox" {{if .Values.Texts}}checked{{end}}>Text</label><label><input name="feed" type="checkbox" {{if .Values.Feed}}checked{{end}}>Feed final label</label></div></fieldset>
       <div class="actions"><button class="secondary" type="submit" formaction="/printers/labels/preview">Preview</button><button type="submit">Print labels</button></div>
     </form>
-    {{if .PreviewPNG}}<section class="preview"><h2>Label preview</h2><img src="{{.PreviewPNG}}" alt="Label preview"></section>{{end}}
+    {{if .PreviewPNG}}<section class="preview"><h2>Label preview</h2><img src="data:image/png;base64,{{.PreviewPNG}}" alt="Label preview"></section>{{end}}
     {{if .Notice}}<div class="message notice">{{.Notice}}</div>{{end}}
     {{if .Error}}<div class="message error">{{.Error}}</div>{{end}}
   </main>

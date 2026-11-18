@@ -21,7 +21,7 @@ type labelPage struct {
 	Values     labelForm
 	Notice     string
 	Error      string
-	PreviewPNG template.URL
+	PreviewPNG string
 }
 
 type labelForm struct {
@@ -90,7 +90,7 @@ func registerLabelRoutes(mux *http.ServeMux, buildID identifierBuilder, printLab
 		}
 		renderLabelUI(w, http.StatusOK, labelPage{
 			Values:     form,
-			PreviewPNG: template.URL("data:image/png;base64," + base64.StdEncoding.EncodeToString(pngData.Bytes())),
+			PreviewPNG: base64.StdEncoding.EncodeToString(pngData.Bytes()),
 		})
 	})
 }
